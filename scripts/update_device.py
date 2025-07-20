@@ -495,12 +495,12 @@ def main():
   with zipfile.ZipFile(args.otafile) as zfp:
     CARE_MAP_ENTRY_NAME = "care_map.pb"
     if CARE_MAP_ENTRY_NAME in zfp.namelist() and not args.no_care_map:
-      # Need root permission to push to /data
-      dut.adb(["root"])
       with tempfile.NamedTemporaryFile() as care_map_fp:
         care_map_fp.write(zfp.read(CARE_MAP_ENTRY_NAME))
         care_map_fp.flush()
-        dut.adb(["push", care_map_fp.name,
+        tmp_care_map = "/data/local/tmp/" + CARE_MAP_ENTRY_NAME
+        dut.adb(["push", care_map_fp.name, tmp_care_map])
+        dut.adb(["shell", "su", "0", "mv", tmp_care_map,
                 "/data/ota_package/" + CARE_MAP_ENTRY_NAME])
 
   if args.file:
