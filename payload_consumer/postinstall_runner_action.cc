@@ -113,8 +113,9 @@ void PostinstallRunnerAction::PerformAction() {
   // If we are switching slots, then we are required to MapAllPartitions,
   // as FinishUpdate() requires all partitions to be mapped.
   // And switching slots requires FinishUpdate() to be called first
-  if (dynamic_control->GetVirtualAbFeatureFlag().IsEnabled() &&
-      !constants::kIsRecovery) {
+  // In recovery, VABC snapshots are also used, so MapAllPartitions is needed
+  // here too.
+  if (dynamic_control->GetVirtualAbFeatureFlag().IsEnabled()) {
     if (!install_plan_.partitions.empty() ||
         install_plan_.switch_slot_on_reboot) {
       if (!dynamic_control->MapAllPartitions()) {
